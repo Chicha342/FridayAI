@@ -1,8 +1,13 @@
 import Foundation
 
-final class AIService {
+struct ChatMessage: Identifiable, Equatable {
+    let id = UUID()
+    let text: String
+    let isUser: Bool
+}
 
-    private let apiKey = ""
+final class AIService {
+    private let apiKey = "--"
     private let model = "gemini-flash-latest"
 
     func fetchAI(message: String) async throws -> String {

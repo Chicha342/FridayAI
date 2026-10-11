@@ -8,37 +8,44 @@ struct MainChatView: View {
     @State var errorMessage = ""
     let ai = AIService()
     
+    @State private var messages: [ChatMessage] = []
+    @FocusState private var focused: Bool
+    
     var body: some View {
         ZStack{
-            LinearGradient(colors: [.white, .blue, .cyan],
+            LinearGradient(colors: [.blue, .blue, .purple],
                            startPoint: .topLeading,
                            endPoint: .bottomTrailing)
             .ignoresSafeArea()
             
             VStack{
-                Text("Friday AI")
-                    .font(.system(size: 18, weight: .bold, design: .serif))
-                    .foregroundStyle(.white)
-                    .padding(.top)
+                Header()
+                
+                //MARK: - SCROLL VIEW
                 ScrollView{
-                    if isLoading{
-                        ProgressView()
-                            .tint(.white)
-                            .padding(.top, 40)
-                    }
                     if !answerText.isEmpty {
                         Text(.init(answerText))
                             .foregroundStyle(.black)
-                            .font(.system(size: 18, weight: .bold, design: .serif))
+                            .font(.system(size: 18, weight: .medium, design: .serif))
                             .padding()
                             .background(.white)
                             .cornerRadius(20)
                             .padding()
                             .frame(maxWidth: .infinity, alignment: .leading)
                     } else {
-                        Text("Ваш ответ")
-                            .font(.system(size: 18, weight: .bold, design: .serif))
-                            .foregroundStyle(.white)
+                        VStack(spacing: 30){
+                            Container(text: "Type Your Question",
+                                      subText: "Ask anything that is on your mind, big or small.",
+                                      image: "house")
+                            
+                            Container(text: "Share a Feeling",
+                                      subText: "Tell me what has felt different lately.",
+                                      image: "heart.fill")
+                            
+                            Container(text: "Talk About Fridays",
+                                      subText: "Explore what your favorite rituals gave you.",
+                                      image: "moon.stars.fill")
+                        }
                     }
                 }
                 .scrollDismissesKeyboard(.interactively)
@@ -59,9 +66,27 @@ struct MainChatView: View {
                             
                             if textFieldText.isEmpty{
                                 HStack{
+                                    Button(action: {
+                                        
+                                    }, label: {
+                                        Image(systemName: "plus")
+                                            .foregroundStyle(.black.opacity(0.6))
+                                            .padding(.trailing, 5)
+                                    })
+                                    
+                                    
                                     Text("Type you question...")
                                         .foregroundStyle(.black.opacity(0.6))
                                     Spacer()
+                                    
+                                    Button(action: {
+                                        
+                                    }, label: {
+                                        Image(systemName: "microphone")
+                                            .foregroundStyle(.black.opacity(0.6))
+                                            .padding(.trailing)
+                                    })
+                                    
                                 }
                                 .padding(.horizontal)
                             }
@@ -93,6 +118,12 @@ struct MainChatView: View {
                 }
                 
             }
+            
+            if isLoading{
+                ProgressView()
+                    .tint(.black)
+            }
+            
         }
     }
     
