@@ -22,36 +22,23 @@ struct MainChatView: View {
                 Header()
                 
                 //MARK: - SCROLL VIEW
-                ScrollView{
-                    if !answerText.isEmpty {
-                        Text(.init(answerText))
-                            .foregroundStyle(.black)
-                            .font(.system(size: 18, weight: .medium, design: .serif))
-                            .padding()
-                            .background(.white)
-                            .cornerRadius(20)
-                            .padding()
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                    } else {
-                        VStack(spacing: 30){
-                            Container(text: "Type Your Question",
-                                      subText: "Ask anything that is on your mind, big or small.",
-                                      image: "house")
-                            
-                            Container(text: "Share a Feeling",
-                                      subText: "Tell me what has felt different lately.",
-                                      image: "heart.fill")
-                            
-                            Container(text: "Talk About Fridays",
-                                      subText: "Explore what your favorite rituals gave you.",
-                                      image: "moon.stars.fill")
+                ScrollViewReader { proxy in
+                    ScrollView{
+                        if !messages.isEmpty {
+                            ForEach(messages) { message in
+                                MessageBubles(message: message).id(message.id)
+                            }
+                        } else {
+                            contaiersBubbles()
                         }
                     }
+                    .scrollDismissesKeyboard(.interactively)
+                    .scrollIndicators(.hidden)
+                    .frame(maxWidth: .infinity)
+                    .padding(.horizontal).onChange(of: messages.count) { scrollToEnd(proxy) }
+                    .onChange(of: isLoading) { scrollToEnd(proxy) }
                 }
-                .scrollDismissesKeyboard(.interactively)
-                .scrollIndicators(.hidden)
-                .frame(maxWidth: .infinity)
-                .padding(.horizontal)
+                
                 
                 
                 //MARK: - textfield
@@ -127,22 +114,49 @@ struct MainChatView: View {
         }
     }
     
+    func contaiersBubbles() -> some View{
+        VStack(spacing: 30){
+            Container(text: "Type Your Question",
+                      subText: "Ask anything that is on your mind, big or small.",
+                      image: "house")
+            
+            Container(text: "Share a Feeling",
+                      subText: "Tell me what has felt different lately.",
+                      image: "heart.fill")
+            
+            Container(text: "Talk About Fridays",
+                      subText: "Explore what your favorite rituals gave you.",
+                      image: "moon.stars.fill")
+        }
+    }
+    
     private func sendMessage(){
         let question = textFieldText.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !question.isEmpty, !isLoading else { return }
         
+        focused = false
         textFieldText = ""
-        answerText = ""
         errorMessage = ""
+        messages.append(ChatMessage(text: question, isUser: true))
         isLoading = true
+        
+        let history = messages
         
         Task{
             do{
-                answerText = try await ai.fetchAI(message: question)
+                answerText = try await ai.fetchAI(history: history)
+                messages.append(ChatMessage(text: answerText, isUser: false))
             }catch{
                 errorMessage = error.localizedDescription
             }
             isLoading = false
+        }
+    }
+    
+    private func scrollToEnd(_ proxy: ScrollViewProxy) {
+        withAnimation(.easeOut(duration: 0.25)) {
+            if isLoading { proxy.scrollTo("loader", anchor: .bottom) }
+            else if let last = messages.last { proxy.scrollTo(last.id, anchor: .bottom) }
         }
     }
 }
