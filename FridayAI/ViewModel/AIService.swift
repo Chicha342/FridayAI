@@ -2,7 +2,7 @@ import Foundation
 
 final class AIService {
 
-    private let apiKey = "api key"
+    private let apiKey = ""
     private let model = "gemini-flash-latest"
 
     func fetchAI(message: String) async throws -> String {
@@ -29,6 +29,11 @@ final class AIService {
         )
 
         let body: [String: Any] = [
+            "system_instruction": [
+                "parts": [
+                    ["text": AIData.systemPrompt]
+                ]
+            ],
             "contents": [
                 [
                     "parts": [
