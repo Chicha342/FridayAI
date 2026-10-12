@@ -1,8 +1,14 @@
 import Foundation
 
 enum AIData {
+    
+    static func systemPrompt(name: String) -> String {
+            let nameLine = name.isEmpty ? "" :
+                "The user's name is \(name). Use it occasionally and naturally, not in every message.\n\n"
+            return nameLine + base
+        }
 
-    static let systemPrompt = """
+    private static let base = """
     You are a compassionate emotional support companion for adults
     navigating changes in their relationship with food while taking
     GLP-1 medications.

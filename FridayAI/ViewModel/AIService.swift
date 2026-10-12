@@ -7,10 +7,10 @@ struct ChatMessage: Identifiable, Equatable {
 }
 
 final class AIService {
-    private let apiKey = "---"
+    private let apiKey = ""
     private let model = "gemini-flash-latest"
 
-    func fetchAI(history: [ChatMessage]) async throws -> String {
+    func fetchAI(history: [ChatMessage], userName: String) async throws -> String {
         let url = URL(string: "https://generativelanguage.googleapis.com/v1beta/models/\(model):generateContent")!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
@@ -23,10 +23,10 @@ final class AIService {
         }
 
         let body: [String: Any] = [
-            "system_instruction": ["parts": [["text": AIData.systemPrompt]]],
-            "contents": contents,
-            "generationConfig": ["temperature": 0.8, "maxOutputTokens": 1024]
-        ]
+                "system_instruction": ["parts": [["text": AIData.systemPrompt(name: userName)]]],
+                "contents": contents,
+                "generationConfig": ["temperature": 0.8, "maxOutputTokens": 1024]
+            ]
         request.httpBody = try JSONSerialization.data(withJSONObject: body)
 
         let (data, response) = try await URLSession.shared.data(for: request)

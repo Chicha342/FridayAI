@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct MainChatView: View {
+    @AppStorage("userName") private var userName = ""
     @State var textFieldText = ""
     @State var isSendButtonVisible: Bool = false
     @State var isLoading: Bool = false
@@ -29,6 +30,12 @@ struct MainChatView: View {
                                 MessageBubles(message: message).id(message.id)
                             }
                         } else {
+                            if !userName.isEmpty{
+                                Text("Hi, \(userName)")
+                                    .font(.system(size: 20, weight: .bold, design: .serif))
+                                    .foregroundStyle(.white)
+                            }
+                            
                             contaiersBubbles()
                         }
                     }
@@ -106,11 +113,6 @@ struct MainChatView: View {
                 
             }
             
-            if isLoading{
-                ProgressView()
-                    .tint(.black)
-            }
-            
         }
     }
     
@@ -144,7 +146,7 @@ struct MainChatView: View {
         
         Task{
             do{
-                answerText = try await ai.fetchAI(history: history)
+                answerText = try await ai.fetchAI(history: history, userName: userName)
                 messages.append(ChatMessage(text: answerText, isUser: false))
             }catch{
                 errorMessage = error.localizedDescription
