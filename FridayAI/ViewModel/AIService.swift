@@ -7,7 +7,7 @@ struct ChatMessage: Identifiable, Equatable {
 }
 
 final class AIService {
-    private let apiKey = "AIzaSyC7q7c9d1Xc3nFz6H4MarBY73CDHUsDPmg"
+    private let apiKey = ""
     private let model = "gemini-flash-latest"
 
     func fetchAI(history: [ChatMessage], userName: String) async throws -> String {
