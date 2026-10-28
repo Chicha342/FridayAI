@@ -8,6 +8,7 @@ struct MainChatView: View {
     @State var answerText = ""
     @State var errorMessage = ""
     let ai = AIService()
+    @State private var isOpenChats = false
     
     @State private var messages: [ChatMessage] = []
     @FocusState private var focused: Bool
@@ -20,7 +21,7 @@ struct MainChatView: View {
             .ignoresSafeArea()
             
             VStack{
-                Header()
+                Header(isOpenChats: $isOpenChats)
                 
                 //MARK: - SCROLL VIEW
                 ScrollViewReader { proxy in
@@ -113,6 +114,22 @@ struct MainChatView: View {
                 
             }
             
+            
+            if isOpenChats{
+                
+                Color.black.opacity(0.2)
+                    .ignoresSafeArea()
+                
+                HStack{
+                    LeftMenu(isOpenChat: $isOpenChats, actionNewChat: {
+                        //New Chat action
+                    })
+                    
+                    Spacer()
+                }
+                .transition(.move(edge: .leading))
+                
+            }
         }
     }
     
